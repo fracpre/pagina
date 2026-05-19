@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070816">
+  <link rel="icon" type="image/png" href="assets/question.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap" rel="stylesheet">
+  <title>404 | perdido?</title>
+  <style>
+    :root {
+      --text: #f2f2f2;
+      --muted: rgba(242, 242, 242, 0.72);
+      --stroke: rgba(255, 255, 255, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #000000;
+    }
+
+    .scene {
+      position: relative;
+      z-index: 1;
+      width: min(92vw, 760px);
+      min-height: 100vh;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+    }
+
+    .stack {
+      position: relative;
+      text-align: center;
+      width: 100%;
+    }
+
+    .title-wrap {
+      display: grid;
+      place-items: center;
+      min-height: clamp(120px, 20vw, 220px);
+    }
+
+    h1 {
+      position: relative;
+      display: inline-block;
+      font-size: clamp(62px, 14vw, 150px);
+      line-height: 0.9;
+      letter-spacing: -0.1em;
+      text-transform: lowercase;
+      text-shadow: 0 0 18px rgba(255, 255, 255, 0.12);
+      animation:
+        fade-rise 1100ms cubic-bezier(.18,.9,.22,1) both,
+        title-glow 5.8s infinite ease-in-out;
+    }
+
+    .subtitle {
+      display: none;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      appearance: none;
+      border: 0;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 14px;
+      font-weight: 700;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, opacity 180ms ease;
+    }
+
+    .button.primary {
+      color: #090909;
+      background: linear-gradient(135deg, #f2f2f2, #8d8d8d);
+      box-shadow: 0 12px 24px rgba(255, 255, 255, 0.08);
+    }
+
+    .button.secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .button:hover {
+      transform: translateY(-3px) scale(1.02);
+    }
+
+    body.leaving .scene {
+      opacity: 0;
+      transform: scale(0.985);
+      filter: blur(8px);
+    }
+
+    .scene {
+      transition: opacity 220ms ease, transform 220ms ease, filter 220ms ease;
+      will-change: opacity, transform, filter;
+    }
+
+    .hint {
+      margin-top: 22px;
+      font-size: 13px;
+      color: rgba(242, 242, 242, 0.56);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .hint a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .title-wrap::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 -20px 0;
+      height: 30px;
+      background: radial-gradient(circle, rgba(255,255,255,0.34), transparent 72%);
+      filter: blur(12px);
+      pointer-events: none;
+    }
+
+    .intro-sub {
+      position: fixed;
+      left: 50%;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      margin-top: 0;
+      color: rgba(242, 242, 242, 0.56);
+      font-family: 'Gamja Flower', cursive;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+
+    .rainbow-text {
+      font-family: inherit;
+      font-size: inherit;
+      background: repeating-linear-gradient(90deg,
+        #ff4d4d 0%,
+        #ffa64d 16.6%,
+        #ffee4d 33.3%,
+        #4dff88 50%,
+        #4dd2ff 66.6%,
+        #b84dff 83.3%,
+        #ff4dff 100%
+      );
+      background-size: 1200% 100%;
+      animation: rainbow-pan 1.2s linear infinite;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,0.55)) drop-shadow(0 0 12px rgba(255,255,255,0.35));
+    }
+
+    @keyframes pop-in {
+      0% {
+        opacity: 0;
+        transform: translateY(18px) scale(0.96);
+        filter: blur(6px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes fade-rise {
+      0% {
+        opacity: 0;
+        transform: translateY(18px);
+        filter: blur(8px);
+      }
+      65% {
+        opacity: 0.9;
+        filter: blur(2px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes title-glow {
+      0%, 100% {
+        text-shadow: 0 0 18px rgba(255, 255, 255, 0.12);
+        filter: brightness(1);
+      }
+      50% {
+        text-shadow: 0 0 28px rgba(255, 255, 255, 0.26);
+        filter: brightness(1.12);
+      }
+    }
+
+    @keyframes rainbow-pan {
+      from { background-position: 0% 50%; }
+      to { background-position: 100% 50%; }
+    }
+
+    @media (max-width: 640px) {
+      .scene {
+        padding: 14px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .title-wrap {
+        min-height: 150px;
+      }
+
+    }
+  </style>
+</head>
+<body>
+  <main class="scene">
+    <section class="stack" aria-labelledby="title-404">
+      <div class="title-wrap">
+        <h1 id="title-404">perdido?</h1>
+      </div>
+      <div class="actions">
+        <a class="button primary" href="https://fracon.top">Volvemos?</a>
+      </div>
+      <div class="intro-sub">created by <span class="rainbow-text">frac</span></div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var button = document.querySelector('.button.primary');
+      if (!button) return;
+
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+        try {
+          sessionStorage.setItem('from-404', '1');
+        } catch (error) {}
+        document.body.classList.add('leaving');
+        window.setTimeout(function () {
+          window.location.href = 'https://fracon.top';
+        }, 180);
+      });
+    })();
+  </script>
+</body>
+</html>
