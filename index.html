@@ -650,6 +650,15 @@
             color: #fff;
         }
 
+        #stickerFront img {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            display: block;
+            transform: rotate(12deg);
+            transform-origin: center;
+        }
+
         
         #stickerBack {
             position: relative;
@@ -680,6 +689,12 @@
                 width: 42px;
                 height: 42px;
                 font-size: 32px;
+            }
+
+            #stickerFront img {
+                width: 42px;
+                height: 42px;
+                transform: rotate(12deg);
             }
 
             #stickerBack img {
@@ -3485,7 +3500,9 @@
                                 })();
                                 </script>
                 <div class="sticker-container" id="stickerContainer">
-                    <div class="overlay-sticker" id="stickerFront">ðŸŒ™</div>
+                    <div class="overlay-sticker" id="stickerFront" aria-hidden="true">
+                        <img src="assets/sticker.gif" alt="Sticker" draggable="false">
+                    </div>
                     <div class="overlay-sticker-back" id="stickerBack"><img src="assets/pregunta.png" alt="?" draggable="false"></div>
                 </div>
             </div>
@@ -4302,6 +4319,7 @@
             obs.observe(document.body, { childList: true, subtree: true, attributes: true });
         })();
     </script>
+
 
 
 
