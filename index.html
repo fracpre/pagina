@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -2566,7 +2566,7 @@
     <div id="intro-overlay">
         <div id="hw-accel-toast" class="toast-notice toast-interactive" role="status" aria-live="polite" aria-atomic="true" style="top: 22px;">
             <span class="toast-title">Avisos</span>
-            <span id="hw-accel-toast-text" class="toast-sub toast-link">La aceleración de hardware está desactivada, la página puede no verse como debería...</span>
+            <span id="hw-accel-toast-text" class="toast-sub toast-link">La aceleraciÃ³n de hardware estÃ¡ desactivada, la pÃ¡gina puede no verse como deberÃ­a...</span>
             <button id="hw-accel-toast-btn" class="toast-button" type="button">activar aceleracion de hardware</button>
             <img class="hw-accel-question" src="assets/question.png" alt="" aria-hidden="true" draggable="false">
             <img class="hw-accel-sticker" src="assets/hellokitty.gif" alt="" aria-hidden="true" draggable="false">
@@ -2629,10 +2629,10 @@
                 modal.id = 'anonModal';
                 modal.innerHTML = `
                     <div class="anon-modal-content" role="dialog" aria-modal="true" aria-labelledby="anonTitle">
-                        <button class="anon-close" id="closeAnon">×</button>
-                        <h3 id="anonTitle">Enviar pregunta anónima</h3>
-                        <p style="margin:6px 0 0 0; font-size:13px; color:rgba(255,255,255,0.85);">Tu pregunta será enviada anónimamente. No compartas datos personales.</p>
-                        <textarea id="anonMessage" placeholder="Escribe tu pregunta aquí..."></textarea>
+                        <button class="anon-close" id="closeAnon">Ã—</button>
+                        <h3 id="anonTitle">Enviar pregunta anÃ³nima</h3>
+                        <p style="margin:6px 0 0 0; font-size:13px; color:rgba(255,255,255,0.85);">Tu pregunta serÃ¡ enviada anÃ³nimamente. No compartas datos personales.</p>
+                        <textarea id="anonMessage" placeholder="Escribe tu pregunta aquÃ­..."></textarea>
                         <div class="anon-actions">
                             <button id="cancelAnon" class="cancel-btn" style="background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:8px 10px; border-radius:8px;">Cancelar</button>
                             <button id="submitAnon" class="submit-btn" style="background:linear-gradient(90deg,#ff1493,#ff69b4); border:none; color:#fff; padding:8px 12px; border-radius:8px;">Enviar</button>
@@ -2684,7 +2684,7 @@
                     if (!text) { statusEl.textContent = 'Escribe tu pregunta antes de enviar.'; return; }
 
                     if (!FORM_ENDPOINT) {
-                        statusEl.innerHTML = 'No hay endpoint configurado. Regístrate en <a href="https://formspree.io/" target="_blank">Formspree</a> o crea un Google Form y pega aquí la URL.\n<br>Reemplaza la constante <code>FORM_ENDPOINT</code> en el código.';
+                        statusEl.innerHTML = 'No hay endpoint configurado. RegÃ­strate en <a href="https://formspree.io/" target="_blank">Formspree</a> o crea un Google Form y pega aquÃ­ la URL.\n<br>Reemplaza la constante <code>FORM_ENDPOINT</code> en el cÃ³digo.';
                         return;
                     }
 
@@ -2694,7 +2694,7 @@
                     try {
                         const fd = new FormData();
                         fd.append('message', text);
-                        fd.append('_subject','Pregunta anónima desde sitio');
+                        fd.append('_subject','Pregunta anÃ³nima desde sitio');
 
                         const res = await fetch(FORM_ENDPOINT, { method: 'POST', body: fd, headers: { 'Accept':'application/json' } });
                         if (res.ok) {
@@ -2702,10 +2702,10 @@
                             setTimeout(closeModal, 1300);
                         } else {
                             const data = await res.json().catch(()=>null);
-                            statusEl.textContent = (data && data.error) ? ('Error: '+data.error) : 'Error al enviar. Intenta de nuevo más tarde.';
+                            statusEl.textContent = (data && data.error) ? ('Error: '+data.error) : 'Error al enviar. Intenta de nuevo mÃ¡s tarde.';
                         }
                     } catch (err) {
-                        statusEl.textContent = 'Error en la conexión. Intenta de nuevo.';
+                        statusEl.textContent = 'Error en la conexiÃ³n. Intenta de nuevo.';
                     } finally {
                         submitBtn.disabled = false;
                     }
@@ -2983,7 +2983,7 @@
 
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(urlToCopy)
-                        .then(() => setTempText('Enlace copiado (pégalo en la barra)'))
+                        .then(() => setTempText('Enlace copiado (pÃ©galo en la barra)'))
                         .catch(() => setTempText('Copia y pega en la barra: ' + urlToCopy));
                 } else {
                     const ta = document.createElement('textarea');
@@ -2993,7 +2993,7 @@
                     ta.style.left = '-9999px';
                     document.body.appendChild(ta);
                     ta.select();
-                    try { document.execCommand('copy'); setTempText('Enlace copiado (pégalo en la barra)'); } catch (e) { setTempText('Copia y pega en la barra: ' + urlToCopy); }
+                    try { document.execCommand('copy'); setTempText('Enlace copiado (pÃ©galo en la barra)'); } catch (e) { setTempText('Copia y pega en la barra: ' + urlToCopy); }
                     try { ta.remove(); } catch(e) {}
                 }
             } catch (e) {}
@@ -3195,10 +3195,10 @@
                     setTimeout(() => {
                         if (typeof window.startBioAnimation === 'function' && !window.bioAnimationStarted) {
                             window.bioAnimationStarted = true;
-                            console.log('Iniciando animación de bio...');
+                            console.log('Iniciando animaciÃ³n de bio...');
                             window.startBioAnimation();
                         } else {
-                            console.log('startBioAnimation no está disponible aún');
+                            console.log('startBioAnimation no estÃ¡ disponible aÃºn');
                         }
                     }, 100);
                 }, 900);
@@ -3237,7 +3237,7 @@
                     if (!placeholder) return;
 
                     const BG_MIN = 1;
-                    const BG_MAX = 12;
+                    const BG_MAX = 13;
                     const STORAGE_LAST_KEY = '__bgVideoLastIndex';
                     const STORAGE_BAG_KEY = '__bgVideoBag';
 
@@ -3424,7 +3424,7 @@
 
                     startPlaybackWithBestEffort();
                 } catch (e) {
-                    console.error('Error configurando el background estático:', e);
+                    console.error('Error configurando el background estÃ¡tico:', e);
                 }
             })();
         </script>
@@ -3485,7 +3485,7 @@
                                 })();
                                 </script>
                 <div class="sticker-container" id="stickerContainer">
-                    <div class="overlay-sticker" id="stickerFront">🌙</div>
+                    <div class="overlay-sticker" id="stickerFront">ðŸŒ™</div>
                     <div class="overlay-sticker-back" id="stickerBack"><img src="assets/pregunta.png" alt="?" draggable="false"></div>
                 </div>
             </div>
@@ -3512,7 +3512,7 @@
                                                             </a>
                                                         </div>
                                                         <div class="badge-container">
-                                                            <img src="assets/spain.png" alt="España" class="badge" id="espanaEgg">
+                                                            <img src="assets/spain.png" alt="EspaÃ±a" class="badge" id="espanaEgg">
                                                         </div>
                                                         <div class="badge-container" id="titoBadge" aria-hidden="true">
                                                             <img src="assets/tito.png" alt="Tito" class="badge" draggable="false">
@@ -3876,7 +3876,7 @@
             try { document.documentElement.style.setProperty('--ui-offset-x', '0px'); } catch(e) {}
             return;
             let rafId = null;
-            let frozen = false; // bloquear realineado tras el primer cálculo
+            let frozen = false; // bloquear realineado tras el primer cÃ¡lculo
             function alignProfileToDiscord(){
                 try {
                     const nameEl = document.getElementById('profile-name');
@@ -3926,10 +3926,10 @@
             const TITO_REVEAL_DELAY_MS = 900;
             let titoRevealTimer = null;
             let clickCount = 0;
-            let isAnimating = false; // Prevenir clicks múltiples durante animación
+            let isAnimating = false; // Prevenir clicks mÃºltiples durante animaciÃ³n
             let isFlipped = false; // Estado actual del sticker
-            let didPostClickShake = false; // asegurar que el sacudón post-click ocurra solo una vez
-            let didReturnShake = false; // asegurar que el sacudón al volver ocurra solo una vez
+            let didPostClickShake = false; // asegurar que el sacudÃ³n post-click ocurra solo una vez
+            let didReturnShake = false; // asegurar que el sacudÃ³n al volver ocurra solo una vez
             let autoReturnTimer = null;
             
             if (stickerContainer && stickerFront && stickerBack) {
@@ -3943,7 +3943,7 @@
         });
     </script>
 
-    <scriptñ>
+    <scriptÃ±>
         (function(){
             const bioMessages = [
                 "Que buscas pillin? sigueme en ig anda ;)",
@@ -3990,7 +3990,7 @@
                     bioMessageIndex = (bioMessageIndex + 1) % bioMessages.length;
                 }
                 bioElement.textContent = bioText + (bioCursorVisible ? '|' : ' ');
-                setTimeout(typeWriterBio, isBioDeleting ? 40 : 80); // Más rápido: 80ms escribir, 40ms borrar
+                setTimeout(typeWriterBio, isBioDeleting ? 40 : 80); // MÃ¡s rÃ¡pido: 80ms escribir, 40ms borrar
             }
 
             setInterval(() => {
@@ -4005,7 +4005,7 @@
                 bioStarted = true;
                 bioElement = document.getElementById('profile-bio');
                 if (bioElement) {
-                    console.log('Iniciando animación de bio...');
+                    console.log('Iniciando animaciÃ³n de bio...');
                     typeWriterBio();
                 }
             };
@@ -4065,8 +4065,8 @@
                 'frac on top',
                 'guillevgo on ig ;)',
             ];
-            const baseType = 330;      // base ms por carácter al escribir (aumentado para más fluidez)
-            const baseErase = 80;      // base ms por carácter al borrar (aumentado)
+            const baseType = 330;      // base ms por carÃ¡cter al escribir (aumentado para mÃ¡s fluidez)
+            const baseErase = 80;      // base ms por carÃ¡cter al borrar (aumentado)
             const pauseAfterFull = 3800;   // ms que permanece el texto completo
             const pauseAfterErase = 700;   // pausa antes de siguiente mensaje
             let idx = 0;
@@ -4092,7 +4092,7 @@
                     const delay = Math.max(16, Math.round(baseErase * (1 + 0.9 * easeInOutQuad(progress))));
                     setTimeout(() => eraseMessage(msg, i - 1), delay);
                 } else {
-                    document.title = 'ㅤ';
+                    document.title = 'ã…¤';
                     idx = (idx + 1) % messages.length;
                     setTimeout(() => typeMessage(messages[idx], 0), pauseAfterErase);
                 }
@@ -4250,7 +4250,7 @@
                             if (playingActivity && playingActivity.name) {
                                 handleActivity.textContent = `Jugando ${playingActivity.name}`;
                             } else if (spotifyActivity && spotifyActivity.details) {
-                                try { handleActivity.textContent = String(spotifyActivity.details).replace(/Spotify\s*[-–—:\s]*/ig, '').trim(); } catch(e) { handleActivity.textContent = spotifyActivity.details; }
+                                try { handleActivity.textContent = String(spotifyActivity.details).replace(/Spotify\s*[-â€“â€”:\s]*/ig, '').trim(); } catch(e) { handleActivity.textContent = spotifyActivity.details; }
                             } else {
                                 handleActivity.textContent = ''; // Limpiar si no hay actividad
                             }
@@ -4302,6 +4302,8 @@
             obs.observe(document.body, { childList: true, subtree: true, attributes: true });
         })();
     </script>
+
+
 
 
 
