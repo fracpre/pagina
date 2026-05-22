@@ -659,6 +659,18 @@
             transform-origin: center;
         }
 
+        #stickerFront .sticker-moon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            line-height: 1;
+            filter: drop-shadow(0 0 6px rgba(255, 223, 0, 0.95)) drop-shadow(0 0 14px rgba(255, 223, 0, 0.45));
+            user-select: none;
+        }
+
         
         #stickerBack {
             position: relative;
@@ -695,6 +707,12 @@
                 width: 42px;
                 height: 42px;
                 transform: rotate(12deg);
+            }
+
+            #stickerFront .sticker-moon {
+                width: 42px;
+                height: 42px;
+                font-size: 32px;
             }
 
             #stickerBack img {
@@ -3501,7 +3519,7 @@
                                 </script>
                 <div class="sticker-container" id="stickerContainer">
                     <div class="overlay-sticker" id="stickerFront" aria-hidden="true">
-                        <img src="assets/sticker.gif" alt="Sticker" draggable="false">
+                        <span class="sticker-moon" aria-hidden="true">🌙</span>
                     </div>
                     <div class="overlay-sticker-back" id="stickerBack"><img src="assets/pregunta.png" alt="?" draggable="false"></div>
                 </div>
