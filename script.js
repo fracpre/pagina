@@ -3086,38 +3086,15 @@ const VISITOR_COUNT_WINDOW_MS = 5 * 60 * 1000;
 const VISITOR_COUNT_STORAGE_KEY = 'paginaLastVisitCountedAt';
 
 function _readLastVisitTimestamp() {
-  try {
-    if (typeof window === 'undefined' || !window.localStorage) return 0;
-    const stored = window.localStorage.getItem(VISITOR_COUNT_STORAGE_KEY);
-    const numeric = Number(stored);
-    return Number.isFinite(numeric) ? numeric : 0;
-  } catch (e) {
-    return 0;
-  }
-}
-
-function _shouldIncrementVisitCount() {
-  const last = _readLastVisitTimestamp();
-  return last === 0 || (Date.now() - last) >= VISITOR_COUNT_WINDOW_MS;
-}
-
-function _rememberVisitCounted() {
-  try {
-    if (typeof window === 'undefined' || !window.localStorage) return;
-    window.localStorage.setItem(VISITOR_COUNT_STORAGE_KEY, Date.now().toString());
-  } catch (e) {
-  }
+  return 0;
 }
 
 async function cargarVisitasReales() {
   const contadorElemento = document.getElementById('visitor-count');
   if (!contadorElemento) return;
 
-  const shouldIncrement = _shouldIncrementVisitCount();
-  const query = shouldIncrement ? '' : '?increment=false';
-
   try {
-    const respuesta = await fetch(`/api/contador${query}`);
+    const respuesta = await fetch('/api/contador');
     const datos = await respuesta.json();
 
     if (!respuesta.ok) {
@@ -3135,10 +3112,6 @@ async function cargarVisitasReales() {
         contadorElemento.style.transition = 'opacity 0.5s';
         contadorElemento.style.opacity = 1;
       }, 100);
-    }
-
-    if (shouldIncrement) {
-      _rememberVisitCounted();
     }
   } catch (error) {
     console.error('Error cargando visitas:', error);
