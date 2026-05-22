@@ -31,7 +31,7 @@ export default async function handler(req, res) {
 
   async function fetchCloudflareUniqueVisitors() {
     if (!cloudflareZoneId || !cloudflareApiToken) {
-      throw new Error('Faltan las variables de Cloudflare para sincronizar');
+      return null;
     }
 
     const end = new Date();
@@ -124,10 +124,20 @@ export default async function handler(req, res) {
     const { headers, data } = await readCurrentSupabaseValue(counterRowId);
 
     if (syncMode === 'cloudflare' || syncMode === 'cf') {
-      const cloudflareTotal = await fetchCloudflareUniqueVisitors();
       const currentValue = data.length > 0
         ? (typeof data[0].contador === 'number' ? data[0].contador : Number(data[0].contador) || 0)
         : 0;
+
+      const cloudflareTotal = await fetchCloudflareUniqueVisitors();
+      if (cloudflareTotal === null) {
+        return res.status(200).json({
+          total: currentValue,
+          source: 'supabase',
+          syncSkipped: true,
+          message: 'Faltan las variables de Cloudflare para sincronizar'
+        });
+      }
+
       const nextValue = Math.max(currentValue, cloudflareTotal);
       await writeSupabaseValue(counterRowId, nextValue, headers);
       return res.status(200).json({ total: nextValue, source: 'cloudflare->supabase', cloudflareTotal });
