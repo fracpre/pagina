@@ -3309,7 +3309,7 @@
         <canvas id="feb8-fireworks" aria-hidden="true"></canvas>
         
         
-        <img id="background" src="assets/background1.jpg" alt="background" aria-hidden="true" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: fill; object-position: center center; z-index: 1; pointer-events: none; display: none;" />
+        <video id="background" alt="background" aria-hidden="true" autoplay loop muted playsinline webkit-playsinline style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: fill; object-position: center center; z-index: 1; pointer-events: none; display: none;"></video>
         <script>
             (function setupSingleBackground(){
                 try {
@@ -3421,8 +3421,7 @@
                     const DEFAULT_VIDEO_VOL = 0.08;
                     const DEFAULT_BOOST = 1;
 
-                    const video = document.createElement('video');
-                    video.id = 'background';
+                    const video = placeholder;
                     video.crossOrigin = "anonymous";
                     video.src = buildSrc(chosenIdx);
                     try {
@@ -3498,7 +3497,6 @@
                         }, { passive: true });
                     } catch(e) {}
 
-                    placeholder.replaceWith(video);
                     try { window.__bgIsVideo = true; } catch (e) {}
                     try { window.__bgSequenceManaged = true; } catch (e) {}
 
@@ -4313,6 +4311,7 @@
             obs.observe(document.body, { childList: true, subtree: true, attributes: true });
         })();
     </script>
+
 
 
 

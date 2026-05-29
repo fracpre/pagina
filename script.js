@@ -840,6 +840,107 @@ document.addEventListener('DOMContentLoaded', () => {
   const socialIcons = document.querySelectorAll('.social-icon');
   const badges = document.querySelectorAll('.badge');
 
+  const BG_MIN = 1;
+  const BG_MAX = 13;
+  const BG_LAST_KEY = '__bgVideoLastIndex';
+  const BG_BAG_KEY = '__bgVideoBag';
+
+  function clampBackgroundIndex(n) {
+    const value = parseInt(n, 10);
+    if (!Number.isFinite(value)) return null;
+    return Math.max(BG_MIN, Math.min(BG_MAX, value));
+  }
+
+  function buildBackgroundSrc(index) {
+    return 'assets/background' + index + '.mp4';
+  }
+
+  function shuffleBackgroundBag(bag) {
+    for (let i = bag.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = bag[i];
+      bag[i] = bag[j];
+      bag[j] = tmp;
+    }
+    return bag;
+  }
+
+  function buildAllBackgroundIndices() {
+    const indices = [];
+    for (let i = BG_MIN; i <= BG_MAX; i++) indices.push(i);
+    return indices;
+  }
+
+  function loadBackgroundBag() {
+    try {
+      const raw = sessionStorage.getItem(BG_BAG_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return null;
+      const filtered = parsed
+        .map(value => clampBackgroundIndex(value))
+        .filter(value => typeof value === 'number');
+      return filtered.length ? filtered : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveBackgroundBag(bag) {
+    try { sessionStorage.setItem(BG_BAG_KEY, JSON.stringify(bag || [])); } catch (e) {}
+  }
+
+  function getLastBackgroundIndex() {
+    try { return clampBackgroundIndex(sessionStorage.getItem(BG_LAST_KEY)); } catch (e) { return null; }
+  }
+
+  function setLastBackgroundIndex(index) {
+    try { sessionStorage.setItem(BG_LAST_KEY, String(index)); } catch (e) {}
+  }
+
+  function refillBackgroundBagAvoidingRepeat(lastIndex) {
+    const bag = shuffleBackgroundBag(buildAllBackgroundIndices());
+    if (typeof lastIndex === 'number' && bag.length > 1 && bag[0] === lastIndex) {
+      const swapIndex = 1 + Math.floor(Math.random() * (bag.length - 1));
+      const tmp = bag[0];
+      bag[0] = bag[swapIndex];
+      bag[swapIndex] = tmp;
+    }
+    return bag;
+  }
+
+  function pickNextBackgroundSrc() {
+    try {
+      let bag = loadBackgroundBag();
+      const lastIndex = getLastBackgroundIndex();
+      if (!bag || !bag.length) {
+        bag = refillBackgroundBagAvoidingRepeat(lastIndex);
+      }
+
+      let chosenIndex = null;
+      while (bag.length) {
+        const candidate = clampBackgroundIndex(bag.shift());
+        if (typeof candidate === 'number' && candidate !== lastIndex) {
+          chosenIndex = candidate;
+          break;
+        }
+      }
+
+      if (chosenIndex === null) {
+        const remaining = buildAllBackgroundIndices().filter(index => index !== lastIndex);
+        chosenIndex = remaining.length ? remaining[Math.floor(Math.random() * remaining.length)] : (lastIndex || BG_MIN);
+      }
+
+      saveBackgroundBag(bag);
+      setLastBackgroundIndex(chosenIndex);
+      return buildBackgroundSrc(chosenIndex);
+    } catch (e) {
+      const fallbackIndex = Math.floor(Math.random() * (BG_MAX - BG_MIN + 1)) + BG_MIN;
+      try { setLastBackgroundIndex(fallbackIndex); } catch (err) {}
+      return buildBackgroundSrc(fallbackIndex);
+    }
+  }
+
   const controlsBar = document.querySelector('.controls');
 
   
@@ -1985,11 +2086,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (homeButton) {
     homeButton.addEventListener('click', () => {
-      switchTheme('assets/background1.jpg', backgroundMusic, 'home-theme');
+      switchTheme(pickNextBackgroundSrc(), backgroundMusic, 'home-theme');
     });
     homeButton.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      switchTheme('assets/background1.jpg', backgroundMusic, 'home-theme');
+      switchTheme(pickNextBackgroundSrc(), backgroundMusic, 'home-theme');
     });
   }
 
