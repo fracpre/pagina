@@ -4101,7 +4101,7 @@
                     const delay = Math.max(16, Math.round(baseErase * (1 + 0.9 * easeInOutQuad(progress))));
                     setTimeout(() => eraseMessage(msg, i - 1), delay);
                 } else {
-                    document.title = 'ã…¤';
+                    document.title = '|';
                     idx = (idx + 1) % messages.length;
                     setTimeout(() => typeMessage(messages[idx], 0), pauseAfterErase);
                 }
