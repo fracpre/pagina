@@ -953,43 +953,17 @@
 
         .badge-box {
             position: relative;
-            background:
-                linear-gradient(180deg, rgba(58, 58, 60, 0.22), rgba(34, 34, 36, 0.10)) !important;
             padding: 4px;
             border-radius: 18px;
             display: inline-flex;
             align-items: center;
             margin-top: 3px;
-            backdrop-filter: blur(5px) saturate(155%);
-            -webkit-backdrop-filter: blur(5px) saturate(155%);
-            border: 1px solid rgba(82, 82, 84, 0.48);
-            box-shadow:
-                inset 0 0 0 1px rgba(255, 255, 255, 0.05),
-                inset 0 0 18px rgba(48, 48, 50, 0.18),
-                0 0 22px rgba(30, 30, 32, 0.20),
-                0 0 42px rgba(18, 18, 20, 0.10);
+            box-shadow: none;
             overflow: hidden;
         }
 
         .badge-box::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 1px;
-            background: radial-gradient(
-                circle at center,
-                rgba(78, 78, 80, 0.42) 0%,
-                rgba(56, 56, 58, 0.24) 52%,
-                rgba(38, 38, 40, 0.08) 74%,
-                transparent 100%
-            );
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.9;
+            display: none;
         }
 
         .badge-box-inner {
