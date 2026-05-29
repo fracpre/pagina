@@ -1169,11 +1169,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   } else {
 
-    document.addEventListener('mousemove', (e) => {
-      cursor.style.left = e.clientX + 'px';
-      cursor.style.top = e.clientY + 'px';
-      cursor.style.display = 'block';
-    });
+    if (cursor) {
+      document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        cursor.style.display = 'block';
+      });
+    }
 
     
     
@@ -1184,8 +1186,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!pb) return;
 
         const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-        const MAX_ROT_X = 8;
-        const MAX_ROT_Y = 10;
+        const MAX_ROT_X = 6;
+        const MAX_ROT_Y = 6;
 
         let hovering = false;
         let rotX = 0;
@@ -1230,13 +1232,15 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (e) {}
     })();
 
-    document.addEventListener('mousedown', () => {
-      cursor.style.transform = 'scale(0.8) translate(0, 0)';
-    });
+    if (cursor) {
+      document.addEventListener('mousedown', () => {
+        cursor.style.transform = 'scale(0.8) translate(0, 0)';
+      });
 
-    document.addEventListener('mouseup', () => {
-      cursor.style.transform = 'scale(1) translate(0, 0)';
-    });
+      document.addEventListener('mouseup', () => {
+        cursor.style.transform = 'scale(1) translate(0, 0)';
+      });
+    }
   }
 
   
@@ -1447,78 +1451,85 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentAudio = backgroundMusic;
   let isMuted = false;
 
-  volumeIcon.addEventListener('click', () => {
-    isMuted = !isMuted;
-    currentAudio.muted = isMuted;
-    volumeIcon.innerHTML = isMuted
-      ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>`
-      : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>`;
-  });
+  if (volumeIcon) {
+    volumeIcon.addEventListener('click', () => {
+      isMuted = !isMuted;
+      currentAudio.muted = isMuted;
+      volumeIcon.innerHTML = isMuted
+        ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>`
+        : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>`;
+    });
 
-  volumeIcon.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    isMuted = !isMuted;
-    currentAudio.muted = isMuted;
-    volumeIcon.innerHTML = isMuted
-      ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>`
-      : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>`;
-  });
+    volumeIcon.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      isMuted = !isMuted;
+      currentAudio.muted = isMuted;
+      volumeIcon.innerHTML = isMuted
+        ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>`
+        : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>`;
+    });
+  }
 
-  volumeSlider.addEventListener('input', () => {
-    currentAudio.volume = volumeSlider.value;
-    isMuted = false;
-    currentAudio.muted = false;
-    volumeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>`;
-  });
+  if (volumeSlider) {
+    volumeSlider.addEventListener('input', () => {
+      currentAudio.volume = volumeSlider.value;
+      isMuted = false;
+      currentAudio.muted = false;
+      if (volumeIcon) {
+        volumeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>`;
+      }
+    });
+  }
 
-
-  transparencySlider.addEventListener('input', () => {
-    const opacity = transparencySlider.value;
-    if (opacity == 0) {
-      profileBlock.style.background = '';
-      profileBlock.style.borderOpacity = '0';
-      profileBlock.style.borderColor = 'transparent';
-      skillsBlock.style.background = 'rgba(0, 0, 0, 0)';
-      skillsBlock.style.borderOpacity = '0';
-      skillsBlock.style.borderColor = 'transparent';
+  if (transparencySlider) {
+    transparencySlider.addEventListener('input', () => {
+      const opacity = transparencySlider.value;
+      if (opacity == 0) {
+        profileBlock.style.background = '';
+        profileBlock.style.borderOpacity = '0';
+        profileBlock.style.borderColor = 'transparent';
+        skillsBlock.style.background = 'rgba(0, 0, 0, 0)';
+        skillsBlock.style.borderOpacity = '0';
+        skillsBlock.style.borderColor = 'transparent';
    
-      profileBlock.style.pointerEvents = 'auto';
-      socialIcons.forEach(icon => {
-        icon.style.pointerEvents = 'auto';
-        icon.style.opacity = '1';
-      });
-      badges.forEach(badge => {
-        badge.style.pointerEvents = 'auto';
-        badge.style.opacity = '1';
-      });
-      profilePicture.style.pointerEvents = 'auto';
-      profilePicture.style.opacity = '1';
-      
-      profileBio.style.opacity = '1';
-      visitorCount.style.opacity = '1';
-    } else {
-      profileBlock.style.background = '';
-      profileBlock.style.borderOpacity = opacity;
-      profileBlock.style.borderColor = '';
-      skillsBlock.style.background = `rgba(0, 0, 0, ${opacity})`;
-      skillsBlock.style.borderOpacity = opacity;
-      skillsBlock.style.borderColor = '';
-      profileBlock.style.pointerEvents = 'auto';
-      socialIcons.forEach(icon => {
-        icon.style.pointerEvents = 'auto';
-        icon.style.opacity = '1';
-      });
-      badges.forEach(badge => {
-        badge.style.pointerEvents = 'auto';
-        badge.style.opacity = '1';
-      });
-      profilePicture.style.pointerEvents = 'auto';
-      profilePicture.style.opacity = '1';
-      
-      profileBio.style.opacity = '1';
-      visitorCount.style.opacity = '1';
-    }
-  });
+        profileBlock.style.pointerEvents = 'auto';
+        socialIcons.forEach(icon => {
+          icon.style.pointerEvents = 'auto';
+          icon.style.opacity = '1';
+        });
+        badges.forEach(badge => {
+          badge.style.pointerEvents = 'auto';
+          badge.style.opacity = '1';
+        });
+        profilePicture.style.pointerEvents = 'auto';
+        profilePicture.style.opacity = '1';
+        
+        if (profileBio) profileBio.style.opacity = '1';
+        visitorCount.style.opacity = '1';
+      } else {
+        profileBlock.style.background = '';
+        profileBlock.style.borderOpacity = opacity;
+        profileBlock.style.borderColor = '';
+        skillsBlock.style.background = `rgba(0, 0, 0, ${opacity})`;
+        skillsBlock.style.borderOpacity = opacity;
+        skillsBlock.style.borderColor = '';
+        profileBlock.style.pointerEvents = 'auto';
+        socialIcons.forEach(icon => {
+          icon.style.pointerEvents = 'auto';
+          icon.style.opacity = '1';
+        });
+        badges.forEach(badge => {
+          badge.style.pointerEvents = 'auto';
+          badge.style.opacity = '1';
+        });
+        profilePicture.style.pointerEvents = 'auto';
+        profilePicture.style.opacity = '1';
+        
+        if (profileBio) profileBio.style.opacity = '1';
+        visitorCount.style.opacity = '1';
+      }
+    });
+  }
 
 
   
@@ -1972,45 +1983,55 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  homeButton.addEventListener('click', () => {
-    switchTheme('assets/background1.jpg', backgroundMusic, 'home-theme');
-  });
-  homeButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    switchTheme('assets/background1.jpg', backgroundMusic, 'home-theme');
-  });
+  if (homeButton) {
+    homeButton.addEventListener('click', () => {
+      switchTheme('assets/background1.jpg', backgroundMusic, 'home-theme');
+    });
+    homeButton.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      switchTheme('assets/background1.jpg', backgroundMusic, 'home-theme');
+    });
+  }
 
-  hackerButton.addEventListener('click', () => {
-    switchTheme('assets/hacker_background.mp4', hackerMusic, 'hacker-theme', hackerOverlay, false);
-  });
-  hackerButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    switchTheme('assets/hacker_background.mp4', hackerMusic, 'hacker-theme', hackerOverlay, false);
-  });
+  if (hackerButton) {
+    hackerButton.addEventListener('click', () => {
+      switchTheme('assets/hacker_background.mp4', hackerMusic, 'hacker-theme', hackerOverlay, false);
+    });
+    hackerButton.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      switchTheme('assets/hacker_background.mp4', hackerMusic, 'hacker-theme', hackerOverlay, false);
+    });
+  }
 
-  rainButton.addEventListener('click', () => {
-    switchTheme('assets/rain_background.mov', rainMusic, 'rain-theme', snowOverlay, true);
-  });
-  rainButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    switchTheme('assets/rain_background.mov', rainMusic, 'rain-theme', snowOverlay, true);
-  });
+  if (rainButton) {
+    rainButton.addEventListener('click', () => {
+      switchTheme('assets/rain_background.mov', rainMusic, 'rain-theme', snowOverlay, true);
+    });
+    rainButton.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      switchTheme('assets/rain_background.mov', rainMusic, 'rain-theme', snowOverlay, true);
+    });
+  }
 
-  animeButton.addEventListener('click', () => {
-    switchTheme('assets/anime_background.mp4', animeMusic, 'anime-theme');
-  });
-  animeButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    switchTheme('assets/anime_background.mp4', animeMusic, 'anime-theme');
-  });
+  if (animeButton) {
+    animeButton.addEventListener('click', () => {
+      switchTheme('assets/anime_background.mp4', animeMusic, 'anime-theme');
+    });
+    animeButton.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      switchTheme('assets/anime_background.mp4', animeMusic, 'anime-theme');
+    });
+  }
 
-  carButton.addEventListener('click', () => {
-    switchTheme('assets/car_background.mp4', carMusic, 'car-theme');
-  });
-  carButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    switchTheme('assets/car_background.mp4', carMusic, 'car-theme');
-  });
+  if (carButton) {
+    carButton.addEventListener('click', () => {
+      switchTheme('assets/car_background.mp4', carMusic, 'car-theme');
+    });
+    carButton.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      switchTheme('assets/car_background.mp4', carMusic, 'car-theme');
+    });
+  }
 
  
   function handleTilt(e, element) {
@@ -2030,7 +2051,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mouseX = clientX - centerX;
     const mouseY = clientY - centerY;
 
-    const maxTilt = 15;
+    const maxTilt = 6;
     const tiltX = (mouseY / rect.height) * maxTilt;
     const tiltY = -(mouseX / rect.width) * maxTilt;
 
@@ -2043,51 +2064,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  profileBlock.addEventListener('mousemove', (e) => handleTilt(e, profileBlock));
-  profileBlock.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    handleTilt(e, profileBlock);
-  });
+  if (skillsBlock) {
+    skillsBlock.addEventListener('mousemove', (e) => handleTilt(e, skillsBlock));
+    skillsBlock.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      handleTilt(e, skillsBlock);
+    });
 
-  skillsBlock.addEventListener('mousemove', (e) => handleTilt(e, skillsBlock));
-  skillsBlock.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    handleTilt(e, skillsBlock);
-  });
-
-  profileBlock.addEventListener('mouseleave', () => {
-    gsap.to(profileBlock, {
-      rotationX: 0,
-      rotationY: 0,
-      duration: 0.5,
-      ease: 'power2.out'
+    skillsBlock.addEventListener('mouseleave', () => {
+      gsap.to(skillsBlock, {
+        rotationX: 0,
+        rotationY: 0,
+        duration: 0.5,
+        ease: 'power2.out'
+      });
     });
-  });
-  profileBlock.addEventListener('touchend', () => {
-    gsap.to(profileBlock, {
-      rotationX: 0,
-      rotationY: 0,
-      duration: 0.5,
-      ease: 'power2.out'
+    skillsBlock.addEventListener('touchend', () => {
+      gsap.to(skillsBlock, {
+        rotationX: 0,
+        rotationY: 0,
+        duration: 0.5,
+        ease: 'power2.out'
+      });
     });
-  });
-
-  skillsBlock.addEventListener('mouseleave', () => {
-    gsap.to(skillsBlock, {
-      rotationX: 0,
-      rotationY: 0,
-      duration: 0.5,
-      ease: 'power2.out'
-    });
-  });
-  skillsBlock.addEventListener('touchend', () => {
-    gsap.to(skillsBlock, {
-      rotationX: 0,
-      rotationY: 0,
-      duration: 0.5,
-      ease: 'power2.out'
-    });
-  });
+  }
 
 
   profilePicture.addEventListener('mouseenter', () => {
@@ -2125,88 +2125,90 @@ document.addEventListener('DOMContentLoaded', () => {
 
  
   let isShowingSkills = false;
-  resultsButton.addEventListener('click', () => {
-    if (!isShowingSkills) {
-      gsap.to(profileBlock, {
-        x: -100,
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.in',
-        onComplete: () => {
-          profileBlock.classList.add('hidden');
-          skillsBlock.classList.remove('hidden');
-          gsap.fromTo(skillsBlock,
-            { x: 100, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
-          );
-          gsap.to(pythonBar, { width: '87%', duration: 2, ease: 'power2.out' });
-          gsap.to(cppBar, { width: '75%', duration: 2, ease: 'power2.out' });
-          gsap.to(csharpBar, { width: '80%', duration: 2, ease: 'power2.out' });
-        }
-      });
-      resultsHint.classList.remove('hidden');
-      isShowingSkills = true;
-    } else {
-      gsap.to(skillsBlock, {
-        x: 100,
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.in',
-        onComplete: () => {
-          skillsBlock.classList.add('hidden');
-          profileBlock.classList.remove('hidden');
-          gsap.fromTo(profileBlock,
-            { x: -100, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
-          );
-        }
-      });
-      resultsHint.classList.add('hidden');
-      isShowingSkills = false;
-    }
-  });
+  if (resultsButton) {
+    resultsButton.addEventListener('click', () => {
+      if (!isShowingSkills) {
+        gsap.to(profileBlock, {
+          x: -100,
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.in',
+          onComplete: () => {
+            profileBlock.classList.add('hidden');
+            skillsBlock.classList.remove('hidden');
+            gsap.fromTo(skillsBlock,
+              { x: 100, opacity: 0 },
+              { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
+            );
+            gsap.to(pythonBar, { width: '87%', duration: 2, ease: 'power2.out' });
+            gsap.to(cppBar, { width: '75%', duration: 2, ease: 'power2.out' });
+            gsap.to(csharpBar, { width: '80%', duration: 2, ease: 'power2.out' });
+          }
+        });
+        resultsHint.classList.remove('hidden');
+        isShowingSkills = true;
+      } else {
+        gsap.to(skillsBlock, {
+          x: 100,
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.in',
+          onComplete: () => {
+            skillsBlock.classList.add('hidden');
+            profileBlock.classList.remove('hidden');
+            gsap.fromTo(profileBlock,
+              { x: -100, opacity: 0 },
+              { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
+            );
+          }
+        });
+        resultsHint.classList.add('hidden');
+        isShowingSkills = false;
+      }
+    });
 
-  resultsButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (!isShowingSkills) {
-      gsap.to(profileBlock, {
-        x: -100,
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.in',
-        onComplete: () => {
-          profileBlock.classList.add('hidden');
-          skillsBlock.classList.remove('hidden');
-          gsap.fromTo(skillsBlock,
-            { x: 100, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
-          );
-          gsap.to(pythonBar, { width: '87%', duration: 2, ease: 'power2.out' });
-          gsap.to(cppBar, { width: '75%', duration: 2, ease: 'power2.out' });
-          gsap.to(csharpBar, { width: '80%', duration: 2, ease: 'power2.out' });
-        }
-      });
-      resultsHint.classList.remove('hidden');
-      isShowingSkills = true;
-    } else {
-      gsap.to(skillsBlock, {
-        x: 100,
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.in',
-        onComplete: () => {
-          skillsBlock.classList.add('hidden');
-          profileBlock.classList.remove('hidden');
-          gsap.fromTo(profileBlock,
-            { x: -100, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
-          );
-        }
-      });
-      resultsHint.classList.add('hidden');
-      isShowingSkills = false;
-    }
-  });
+    resultsButton.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (!isShowingSkills) {
+        gsap.to(profileBlock, {
+          x: -100,
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.in',
+          onComplete: () => {
+            profileBlock.classList.add('hidden');
+            skillsBlock.classList.remove('hidden');
+            gsap.fromTo(skillsBlock,
+              { x: 100, opacity: 0 },
+              { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
+            );
+            gsap.to(pythonBar, { width: '87%', duration: 2, ease: 'power2.out' });
+            gsap.to(cppBar, { width: '75%', duration: 2, ease: 'power2.out' });
+            gsap.to(csharpBar, { width: '80%', duration: 2, ease: 'power2.out' });
+          }
+        });
+        resultsHint.classList.remove('hidden');
+        isShowingSkills = true;
+      } else {
+        gsap.to(skillsBlock, {
+          x: 100,
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.in',
+          onComplete: () => {
+            skillsBlock.classList.add('hidden');
+            profileBlock.classList.remove('hidden');
+            gsap.fromTo(profileBlock,
+              { x: -100, opacity: 0 },
+              { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
+            );
+          }
+        });
+        resultsHint.classList.add('hidden');
+        isShowingSkills = false;
+      }
+    });
+  }
 
 
   typeWriterStart();

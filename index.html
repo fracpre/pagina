@@ -436,7 +436,17 @@
             
             
         }
-        
+
+        #profile-block.menu-split-source {
+            opacity: 0 !important;
+            transition: none !important;
+            pointer-events: none !important;
+        }
+
+        #profile-block.menu-split-revealing {
+            transition: none !important;
+        }
+
         #profile-block.show {
             opacity: 1;
             transform: translate(-50%, -50%) perspective(1000px) rotateX(var(--pb-tilt-x)) rotateY(var(--pb-tilt-y)) scale3d(1,1,1);
@@ -1088,12 +1098,6 @@
             opacity: 1 !important;
                 background: transparent;
                 border: none;
-        }        .bio-separator {
-            width: 100%;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.2);
-            margin: 20px 0;
-            opacity: 1 !important;
         }
 
         .profile-footer {
@@ -1489,8 +1493,8 @@
             
             position: absolute !important;
             left: 50% !important;
-            bottom: calc(100% + 14px) !important;
-            top: auto !important;
+            top: calc(100% + 14px) !important;
+            bottom: auto !important;
             margin: 0 !important;
             z-index: 10060;
 
@@ -1499,8 +1503,8 @@
             visibility: hidden;
             pointer-events: none;
 
-            transform: translateX(-50%) translateY(6px) scale(0.985);
-            transform-origin: center bottom;
+            transform: translateX(-50%) translateY(-6px) scale(0.985);
+            transform-origin: center top;
 
             transition:
                 opacity var(--roblox-duration-opacity) var(--roblox-ease-opacity) var(--roblox-hide-delay),
@@ -1532,8 +1536,8 @@
         .presence-row #roblox-card.roblox-tooltip-card {
             position: absolute !important;
             left: 50% !important;
-            bottom: calc(100% + 14px) !important;
-            top: auto !important;
+            top: calc(100% + 14px) !important;
+            bottom: auto !important;
             margin: 0 !important;
         }
 
@@ -1636,10 +1640,10 @@
 
         
         .bio-spacer {
-            --bio-spacer-height: 0px;
-            height: 0;
+            --bio-spacer-height: 18px;
+            height: var(--bio-spacer-height);
             width: 100%;
-            display: none;
+            display: block;
         }
 
         
@@ -2840,10 +2844,6 @@
         })();
         window.bioAnimationStarted = false;
 
-        function tryEnterFullscreen() {
-            return;
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             const overlay = document.getElementById('intro-overlay');
             const introText = document.getElementById('intro-text');
@@ -3075,6 +3075,93 @@
             return Math.max(0, Math.min(1, v));
         }
 
+        function revealMenuWithSplitDrop(pb) {
+            try {
+                if (!pb) return false;
+
+                pb.hidden = false;
+                pb.setAttribute('aria-hidden', 'false');
+                pb.classList.add('menu-split-revealing');
+                gsap.set(pb, {
+                    opacity: 0,
+                    y: -120,
+                    scale: 0.985,
+                    force3D: true,
+                    transformOrigin: 'center center'
+                });
+
+                const header = pb.querySelector('.profile-header');
+                const info = pb.querySelector('.profile-info');
+                const spacer = pb.querySelector('.bio-spacer');
+                const footer = pb.querySelector('.profile-footer');
+
+                const groups = [
+                    { nodes: [header], y: -38, delay: 0.00, opacity: 0.0, scale: 0.995 },
+                    { nodes: [info, spacer], y: -24, delay: 0.10, opacity: 0.0, scale: 0.997 },
+                    { nodes: [footer], y: -16, delay: 0.20, opacity: 0.0, scale: 0.995 }
+                ];
+
+                const animTargets = [];
+                groups.forEach((group) => {
+                    group.nodes.forEach((node) => {
+                        if (!node) return;
+                        animTargets.push(node);
+                        gsap.set(node, {
+                            opacity: group.opacity,
+                            y: group.y,
+                            scale: group.scale,
+                            force3D: true,
+                            transformOrigin: 'center top'
+                        });
+                    });
+                });
+
+                pb.style.pointerEvents = 'none';
+                pb.classList.add('show');
+
+                requestAnimationFrame(() => {
+                    gsap.to(pb, {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.82,
+                        ease: 'power3.out',
+                        overwrite: 'auto'
+                    });
+
+                    groups.forEach((group) => {
+                        group.nodes.forEach((node) => {
+                            if (!node) return;
+                            gsap.to(node, {
+                                opacity: 1,
+                                y: 0,
+                                scale: 1,
+                                duration: 0.64,
+                                delay: group.delay,
+                                ease: 'power2.out',
+                                force3D: true,
+                                overwrite: 'auto'
+                            });
+                        });
+                    });
+
+                    gsap.delayedCall(0.92, () => {
+                        try { pb.style.pointerEvents = ''; } catch (e) {}
+                        try { pb.style.visibility = ''; } catch (e) {}
+                        try { pb.classList.remove('menu-split-revealing'); } catch (e) {}
+                        try { gsap.set(pb, { clearProps: 'transform,opacity' }); } catch (e) {}
+                        animTargets.forEach((node) => {
+                            try { gsap.set(node, { clearProps: 'transform,opacity' }); } catch (e) {}
+                        });
+                    });
+                });
+
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
         function bindLowerVolumeAfterFirstBgLoop() {
             try {
                 if (window.__lowerAfterFirstBgLoopBound) return;
@@ -3097,12 +3184,6 @@
                         fadeToVolume(target, applyVolumeBoost(0.03, boost), 1200);
                     } catch(e) {}
                 };
-
-                try {
-                    if (bg && bg.tagName === 'VIDEO') {
-                        bg.addEventListener('ended', lowerOnce, { once: true });
-                    }
-                } catch(e) {}
 
                 try {
                     if (bg && bg.tagName === 'VIDEO' && !bg.__lowerLoopTimeUpdateBound) {
@@ -3187,8 +3268,10 @@
 
             if (pb) {
                 setTimeout(() => {
-                    pb.classList.add('show');
-                    pb.style.pointerEvents = 'auto';
+                    if (!revealMenuWithSplitDrop(pb)) {
+                        pb.classList.add('show');
+                        pb.style.pointerEvents = 'auto';
+                    }
                     try {
                         const bg = document.getElementById('background');
                         const music = document.getElementById('background-music');
@@ -3225,15 +3308,6 @@
                         }
                     } catch (e) {}
                     
-                    setTimeout(() => {
-                        if (typeof window.startBioAnimation === 'function' && !window.bioAnimationStarted) {
-                            window.bioAnimationStarted = true;
-                            console.log('Iniciando animaciÃ³n de bio...');
-                            window.startBioAnimation();
-                        } else {
-                            console.log('startBioAnimation no estÃ¡ disponible aÃºn');
-                        }
-                    }, 100);
                 }, 900);
             }
 
@@ -3253,7 +3327,6 @@
                     }
                 }
             } catch (e) {}
-
         }
     </script>
     
@@ -3558,8 +3631,6 @@
                                         </div>
                                     </div>
                                 </div>
-                
-                                <div class="bio-separator"></div>
                                 <div class="bio-spacer" aria-hidden="true"></div>
                                 
                                 <div class="profile-footer">
@@ -3978,75 +4049,6 @@
         });
     </script>
 
-    <scriptÃ±>
-        (function(){
-            const bioMessages = [
-                "Que buscas pillin? sigueme en ig anda ;)",
-                "Beny Jr Lover",
-                "A lonely person never goes gonna be betrayed",
-                "Beny Jr Lover",
-                "#benyvuelveyaporfavor :(",
-                "guillevgo on ig ;)",
-                "Que buscas pillin? sigueme en ig anda ;)",
-                "Beny Jr Lover",
-                "A lonely person never goes gonna be betrayed",
-                "Beny Jr Lover",
-                "#benyvuelveyaporfavor :(",
-                "A lonely person never goes gonna be betrayed",
-                "I want to feel that I am in love... :/",
-                "#benyvuelveyaporfavor :(",
-                "If it was good for you, why did you leave me?",
-                "A lonely person never goes gonna be betrayed"
-            ];
-            
-            let bioText = '';
-            let bioIndex = 0;
-            let bioMessageIndex = 0;
-            let isBioDeleting = false;
-            let bioCursorVisible = true;
-            let bioElement = null;
-            let bioStarted = false;
-
-            function typeWriterBio() {
-                if (!bioElement) return;
-                
-                if (!isBioDeleting && bioIndex < bioMessages[bioMessageIndex].length) {
-                    bioText = bioMessages[bioMessageIndex].slice(0, bioIndex + 1);
-                    bioIndex++;
-                } else if (isBioDeleting && bioIndex > 0) {
-                    bioText = bioMessages[bioMessageIndex].slice(0, bioIndex - 1);
-                    bioIndex--;
-                } else if (bioIndex === bioMessages[bioMessageIndex].length) {
-                    isBioDeleting = true;
-                    setTimeout(typeWriterBio, 2000);
-                    return;
-                } else if (bioIndex === 0 && isBioDeleting) {
-                    isBioDeleting = false;
-                    bioMessageIndex = (bioMessageIndex + 1) % bioMessages.length;
-                }
-                bioElement.textContent = bioText + (bioCursorVisible ? '|' : ' ');
-                setTimeout(typeWriterBio, isBioDeleting ? 40 : 80); // MÃ¡s rÃ¡pido: 80ms escribir, 40ms borrar
-            }
-
-            setInterval(() => {
-                bioCursorVisible = !bioCursorVisible;
-                if (bioElement) {
-                    bioElement.textContent = bioText + (bioCursorVisible ? '|' : ' ');
-                }
-            }, 500);
-
-            window.startBioAnimation = function() {
-                if (bioStarted) return;
-                bioStarted = true;
-                bioElement = document.getElementById('profile-bio');
-                if (bioElement) {
-                    console.log('Iniciando animaciÃ³n de bio...');
-                    typeWriterBio();
-                }
-            };
-        })();
-    </script>
-
     <script>
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
@@ -4096,9 +4098,9 @@
         (function(){
             const messages = [
                 'frac on top',
-                'guillevgo on ig ;)',
+                'guillevgo on ig',
                 'frac on top',
-                'guillevgo on ig ;)',
+                'guillevgo on ig',
             ];
             const baseType = 330;      // base ms por carÃ¡cter al escribir (aumentado para mÃ¡s fluidez)
             const baseErase = 80;      // base ms por carÃ¡cter al borrar (aumentado)
@@ -4337,6 +4339,7 @@
             obs.observe(document.body, { childList: true, subtree: true, attributes: true });
         })();
     </script>
+
 
 
 
