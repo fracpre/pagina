@@ -955,9 +955,6 @@ document.addEventListener('DOMContentLoaded', () => {
     r: 64,
     g: 95,
     b: 202,
-    active: false,
-    timerId: 0,
-    videoFrameId: 0,
   };
 
   function rgbToCssVars(color) {
@@ -987,6 +984,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function applyReadableTextColor(color) {
+    try {
+      const red = Math.max(0, Math.min(255, Number(color && color.r) || 0));
+      const green = Math.max(0, Math.min(255, Number(color && color.g) || 0));
+      const blue = Math.max(0, Math.min(255, Number(color && color.b) || 0));
+      const luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255;
+      const textColor = luminance > 0.55 ? '#000000' : '#ffffff';
+      document.documentElement.style.setProperty('--video-text-color', textColor);
+    } catch (e) {}
+  }
+
   function ambientizeNameColor(color) {
     const red = Math.max(0, Math.min(255, color.r));
     const green = Math.max(0, Math.min(255, color.g));
@@ -1009,11 +1017,13 @@ document.addEventListener('DOMContentLoaded', () => {
       ? cleanHex.split('').map((char) => char + char).join('')
       : cleanHex;
     const parsed = parseInt(value || '4075ca', 16);
-    rgbToCssVars({
+    const fallbackColor = {
       r: (parsed >> 16) & 255,
       g: (parsed >> 8) & 255,
       b: parsed & 255,
-    });
+    };
+    rgbToCssVars(fallbackColor);
+    applyReadableTextColor(fallbackColor);
   }
 
   function deriveColorFromFrame() {
@@ -1068,9 +1078,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (bestColor) {
         return {
-          r: red * 0.35 + bestColor.r * 0.65,
-          g: green * 0.35 + bestColor.g * 0.65,
-          b: blue * 0.35 + bestColor.b * 0.65,
+          r: red * 0.15 + bestColor.r * 0.85,
+          g: green * 0.15 + bestColor.g * 0.85,
+          b: blue * 0.15 + bestColor.b * 0.85,
         };
       }
 
@@ -1083,7 +1093,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function sampleNameColorFromBackground() {
     const sampled = deriveColorFromFrame();
     if (sampled) {
-      mixNameColor(sampled, 0.35);
+      mixNameColor(sampled, 0.45);
+      applyReadableTextColor(sampled);
     }
   }
 
@@ -2923,7 +2934,10 @@ document.addEventListener('DOMContentLoaded', () => {
               deco.className = 'handle-avatar-decoration';
               avatarWrap.insertBefore(deco, avatarWrap.firstChild);
             }
-            deco.src = decoUrl;
+            if (deco.dataset.decorationSrc !== decoUrl) {
+              deco.src = decoUrl;
+              deco.dataset.decorationSrc = decoUrl;
+            }
             deco.alt = 'Avatar decoration';
             deco.onerror = function() { try { this.remove(); } catch(e){} };
           } else if (avatarWrap) {

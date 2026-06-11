@@ -605,6 +605,7 @@ body.discord-loading-active .handle-inner {
   height: 22px;
 }
 
+
 .badge-container img {
   image-rendering: pixelated;
 }
@@ -615,6 +616,12 @@ body.discord-loading-active .handle-inner {
   height: 22px;
   backface-visibility: hidden;
 }
+
+.badge-container.upcoming .badge {
+  transform: scale(2.8);
+  transform-origin: center;
+}
+
 
 .badge-back {
   position: absolute;
@@ -738,6 +745,7 @@ body.discord-loading-active .handle-inner {
     width: 16px;
     height: 16px;
   }
+
 
 
   .social-links {
@@ -889,6 +897,7 @@ body.discord-loading-active .handle-inner {
     height: 14px;
   }
 
+
   .social-links {
     gap: 6px;
     padding: 4px 6px;
@@ -986,6 +995,7 @@ body.discord-loading-active .handle-inner {
     width: 12px;
     height: 12px;
   }
+
 
   .social-links {
     gap: 4px;
@@ -1087,6 +1097,7 @@ body.discord-loading-active .handle-inner {
     width: 10px;
     height: 10px;
   }
+
 
   .badge-group {
     gap: 1px;

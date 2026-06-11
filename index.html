@@ -94,14 +94,14 @@
 
         body {
             background-color: #000;
-            color: #fff;
+            color: var(--video-text-color, #fff);
             
             --accent-r: 0;
             --accent-g: 206;
             --accent-b: 209;
-            --name-r: 0;
-            --name-g: 206;
-            --name-b: 209;
+            --name-r: 64;
+            --name-g: 95;
+            --name-b: 202;
             transition: --accent-r 900ms ease, --accent-g 900ms ease, --accent-b 900ms ease;
         }
 
@@ -769,7 +769,7 @@
     font-size: 38px;
     font-weight: normal;
     letter-spacing: 3px;
-    color: #000;
+    color: var(--video-text-color, #fff);
     position: relative;
     margin: 0;
     line-height: 1.2;
@@ -793,7 +793,7 @@
     text-shadow: none;
     filter: none;
     overflow: visible;
-    color: rgb(var(--name-r), var(--name-g), var(--name-b));
+    color: var(--video-text-color, #fff);
     -webkit-text-fill-color: currentColor;
     -webkit-text-stroke: 0.85px rgba(255, 255, 255, 0.20);
     transition: color 140ms linear, text-shadow 140ms linear, filter 140ms linear;
@@ -1630,7 +1630,7 @@
         
 
         .discord-handle .handle-inner { display:flex; align-items:center; gap:14px; }
-        .handle-avatar-wrap { position: relative; width: 64px; height: 64px; flex: 0 0 64px; }
+        .handle-avatar-wrap { position: relative; width: 64px; height: 64px; flex: 0 0 64px; overflow: visible; }
         .handle-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; display:block; }
         
         .handle-avatar-decoration {
@@ -1638,9 +1638,10 @@
             left: 50%;
             top: 50%;
             
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%) scale(0.6875);
+            transform-origin: center;
             width: 102px; 
-            height: 70px; 
+            height: 102px; 
             object-fit: contain;
             pointer-events: none;
             display: block;
@@ -1738,6 +1739,10 @@
         .discord-handle.no-music .handle-album-art { display: none !important; }
 
         .handle-name { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; color: #fff; font-size: 20px; font-family: 'Science Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        .discord-handle .handle-name,
+        .discord-handle .handle-name-text {
+            color: #fff !important;
+        }
         
         .discord-handle .handle-name { transform: translateY(4px); }
         @media (max-width: 430px) {
@@ -1752,7 +1757,7 @@
             line-height: inherit;
             display: inline;
         }
-        
+
         .discord-handle .handle-text-content {
             display: flex;
             flex-direction: column;
@@ -3579,7 +3584,7 @@
                                                 <div class="badge-box-inner">
                                                     <div class="badge-group">
                                                         <div class="badge-container upcoming">
-                                                            <img src="assets/gato.gif" alt="Developer" class="badge">
+                                                            <img src="assets/gato.png" alt="animal" class="badge">
                                                         </div>
                                                         <div class="badge-container">
                                                             <a href="https://instagram.com/guillevgo" target="_blank" rel="noopener noreferrer">
@@ -4311,6 +4316,7 @@
             obs.observe(document.body, { childList: true, subtree: true, attributes: true });
         })();
     </script>
+
 
 
 
