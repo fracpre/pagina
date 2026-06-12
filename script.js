@@ -984,6 +984,53 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function vivifyNameColor(color) {
+    let r = Math.max(0, Math.min(255, color.r)) / 255;
+    let g = Math.max(0, Math.min(255, color.g)) / 255;
+    let b = Math.max(0, Math.min(255, color.b)) / 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+    let h = 0;
+    let s = 0;
+    let l = (max + min) / 2;
+    if (delta !== 0) {
+      s = l > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+      if (max === r) h = ((g - b) / delta) % 6;
+      else if (max === g) h = (b - r) / delta + 2;
+      else h = (r - g) / delta + 4;
+      h /= 6;
+      if (h < 0) h += 1;
+    }
+
+    s = Math.min(1, s * 1.45 + 0.18);
+    l = Math.min(0.66, Math.max(0.52, l));
+
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    };
+
+    let nr;
+    let ng;
+    let nb;
+    if (s === 0) {
+      nr = ng = nb = l;
+    } else {
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      nr = hue2rgb(p, q, h + 1 / 3);
+      ng = hue2rgb(p, q, h);
+      nb = hue2rgb(p, q, h - 1 / 3);
+    }
+
+    return { r: nr * 255, g: ng * 255, b: nb * 255 };
+  }
+
   function applyReadableTextColor(color) {
     try {
       const red = Math.max(0, Math.min(255, Number(color && color.r) || 0));
@@ -1093,7 +1140,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function sampleNameColorFromBackground() {
     const sampled = deriveColorFromFrame();
     if (sampled) {
-      mixNameColor(sampled, 0.45);
+      mixNameColor(vivifyNameColor(sampled), 0.45);
       applyReadableTextColor(sampled);
     }
   }
