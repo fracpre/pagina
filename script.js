@@ -753,12 +753,11 @@ function initMedia() {
   
   
   if (backgroundElem.tagName === 'VIDEO') {
-    backgroundElem.muted = true;
-    
-    try { ensureBackgroundVideoUnpausable(backgroundElem); } catch (e) {}
     if (!window.__bgSequenceManaged) {
+      backgroundElem.muted = true;
       try { backgroundElem.pause(); } catch (err) {}
     }
+    try { ensureBackgroundVideoUnpausable(backgroundElem); } catch (e) {}
   } else {
     
     backgroundElem.style.display = 'none';
@@ -778,13 +777,14 @@ function ensureBackgroundVideoUnpausable(videoEl) {
     try { videoEl.setAttribute('playsinline', ''); } catch (e) {}
     try { videoEl.loop = true; } catch (e) {}
     try { videoEl.preload = 'auto'; } catch (e) {}
-    try { videoEl.muted = true; } catch (e) {}
 
     const tryResume = () => {
       try {
         
         if (document.hidden) return;
-        if (videoEl.paused) videoEl.play().catch(() => {});
+        if (videoEl.paused) videoEl.play().catch(() => {
+          try { videoEl.muted = true; videoEl.play().catch(() => {}); } catch (e) {}
+        });
       } catch (e) {}
     };
 
@@ -1069,7 +1069,7 @@ document.addEventListener('DOMContentLoaded', () => {
       g: (parsed >> 8) & 255,
       b: parsed & 255,
     };
-    rgbToCssVars(fallbackColor);
+    rgbToCssVars(vivifyNameColor(fallbackColor));
     applyReadableTextColor(fallbackColor);
   }
 
@@ -1947,6 +1947,13 @@ document.addEventListener('DOMContentLoaded', () => {
           try {
             const bg = document.getElementById('background');
             if (!bg || bg.tagName !== 'VIDEO') return;
+            const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const onThemeWithOwnMusic = ['hacker-theme', 'rain-theme', 'anime-theme', 'car-theme']
+              .some((cls) => document.body.classList.contains(cls));
+            if (window.__bgSequenceManaged && !isIOS && !onThemeWithOwnMusic && bg.muted) {
+              try { bg.muted = false; } catch (e) {}
+            }
             try { if (bg.paused) bg.play().catch(()=>{}); } catch (e) {}
           } catch (e) {}
         };
