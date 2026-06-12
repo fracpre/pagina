@@ -1900,8 +1900,7 @@ document.addEventListener('DOMContentLoaded', () => {
           try {
             const bg = document.getElementById('background');
             if (!bg || bg.tagName !== 'VIDEO') return;
-            try { bg.muted = true; } catch (e) {}
-            try { bg.play().catch(()=>{}); } catch (e) {}
+            try { if (bg.paused) bg.play().catch(()=>{}); } catch (e) {}
           } catch (e) {}
         };
         window.addEventListener('pointerdown', tryPlayOnGesture, { passive: true });
