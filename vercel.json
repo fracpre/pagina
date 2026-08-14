@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/api/contador",
+      "dest": "/api/contador.js"
+    },
+    {
+      "src": "/api/protected_videos(?:/.*)?",
+      "dest": "/404.html",
+      "status": 404
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/404.html",
+      "status": 404
+    }
+  ]
+}
