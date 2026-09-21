@@ -1,5 +1,4 @@
 let hasUserInteracted = false;
-let isRapunzelActive = false;
 
 
 (function feb8FooterFireworks(){
@@ -122,7 +121,7 @@ let isRapunzelActive = false;
           
           const maxTrail = Math.max(12, Math.min(24, Math.floor(20 * state.dpr)));
           if (p.trail.length > maxTrail) p.trail.length = maxTrail;
-        } catch (e) { console.warn('[RAPUNZEL] preload error', e); }
+        } catch (e) { console.warn('[FIREWORKS] particle trail update failed', e); }
 
         p.vx *= p.drag;
         p.vy *= p.drag;
@@ -200,488 +199,6 @@ function chooseDisplayName(discordUser) {
   return g.length > 0 ? g : u;
 }
 
-// --- Flor / Rapunzel handler: preload + smooth transition + persistent aura ---
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('[FLOR] Script loaded and DOM ready');
-  try {
-    const flor = document.getElementById('flor-badge');
-    const backgroundVideo = document.getElementById('background');
-    const overlay = document.getElementById('bg-transition-overlay');
-    if (!flor || !backgroundVideo) return;
-
-    // Hover effect: 15% chance to show tigre.png on mouseenter
-    let isMouseOverFlor = false;
-    
-    flor.addEventListener('mouseenter', () => {
-      try {
-        isMouseOverFlor = true;
-        // Don't change to tigre if Rapunzel is playing
-        if (isRapunzelActive || window.__rapunzelActive) {
-          return;
-        }
-        // 15% chance to show tigre.png
-        const probability = 0.15;
-        if (Math.random() < probability) {
-          flor.src = 'assets/tigre.png';
-          console.log('[FLOR] tigre.png activated');
-        }
-      } catch (e) {}
-    });
-
-    flor.addEventListener('mouseleave', () => {
-      try {
-        isMouseOverFlor = false;
-        // Don't change if Rapunzel is playing
-        if (isRapunzelActive || window.__rapunzelActive) {
-          return;
-        }
-        // Always revert to flor.png when mouse leaves
-        flor.src = 'assets/flor.png';
-        console.log('[FLOR] reverted to flor.png');
-      } catch (e) {}
-    });
-    
-    // Global mousemove to ensure tigre only shows when mouse is over flor
-    document.addEventListener('mousemove', () => {
-      try {
-        if (!isMouseOverFlor && !isRapunzelActive && !window.__rapunzelActive) {
-          // Force revert to flor.png if mouse is not over flor
-          if (flor.src.includes('tigre.png')) {
-            flor.src = 'assets/flor.png';
-            console.log('[FLOR] forced revert to flor.png (global check)');
-          }
-        }
-      } catch (e) {}
-    });
-
-    flor.addEventListener('click', async (ev) => {
-      try {
-        console.log('[RAPUNZEL] flor click handler fired');
-        ev.preventDefault();
-        const florContainer = flor.closest('.badge-container');
-        // save previous background state to restore after Rapunzel
-        let prevBg = null;
-        let overlayVideo = null;
-        try {
-          prevBg = {
-            src: backgroundVideo.currentSrc || backgroundVideo.src || (backgroundVideo.getAttribute && backgroundVideo.getAttribute('src')) || null,
-            bgIndex: (backgroundVideo && backgroundVideo.dataset) ? backgroundVideo.dataset.bgIndex : undefined,
-            currentTime: (typeof backgroundVideo.currentTime === 'number') ? backgroundVideo.currentTime : 0,
-            loop: !!backgroundVideo.loop
-          };
-        } catch (e) { prevBg = null; }
-        // keep aura
-        if (florContainer) florContainer.classList.add('force-sparkles');
-        // show sticker in the bg index button immediately (direct DOM update for this scope)
-        try {
-          const display = document.getElementById('bg-index-display');
-          if (display) display.innerHTML = '<img src="assets/sticker.gif" alt="sticker" style="width:20px;height:20px;display:block;">';
-        } catch (e) {}
-        // disable background-cycle button while Rapunzel plays
-        try {
-          const bgCycleBtn = document.getElementById('bg-cycle-button');
-          if (bgCycleBtn) {
-            bgCycleBtn.disabled = true;
-            bgCycleBtn.classList.add('disabled-during-rapunzel');
-          }
-        } catch (e) {}
-
-        // guard against double-activation (recover if flags are stale)
-        try {
-          console.log('[RAPUNZEL] flags before guard', window.__rapunzelActive, isRapunzelActive);
-          if (window.__rapunzelActive || isRapunzelActive) {
-            const overlayExists = !!document.getElementById('rapunzel-overlay-video');
-            const bgSrc = (backgroundVideo && (backgroundVideo.currentSrc || backgroundVideo.src || ''));
-            const rapBackgroundActive = bgSrc.includes('rapunzel');
-            if (!overlayExists && !rapBackgroundActive) {
-              console.log('[RAPUNZEL] stale active flags detected — resetting');
-              window.__rapunzelActive = false;
-              isRapunzelActive = false;
-            } else {
-              console.log('[RAPUNZEL] already active and running, ignoring');
-              return;
-            }
-          }
-        } catch (e) { console.error('[RAPUNZEL] guard check failed', e); }
-        isRapunzelActive = true;
-        window.__rapunzelActive = true;
-        console.log('[RAPUNZEL] marked active');
-        try { if (typeof updateBgIndexDisplay === 'function') updateBgIndexDisplay(); } catch (e) {}
-
-        // show overlay (fade in) if available and perform same UI class changes as normal transitions
-        try {
-          if (overlay) {
-            const fadeIn = 0.48;
-            try {
-              gsap.to(overlay, {
-                opacity: 1,
-                duration: fadeIn,
-                ease: 'power2.in',
-                onComplete: () => {
-                  try {
-                    document.body.classList.add('home-theme');
-                    if (hackerOverlay) hackerOverlay.classList.add('hidden');
-                    if (snowOverlay) snowOverlay.classList.add('hidden');
-                    if (resultsButtonContainer) resultsButtonContainer.classList.add('hidden');
-                    if (skillsBlock) skillsBlock.classList.add('hidden');
-                    if (resultsHint) resultsHint.classList.add('hidden');
-                    if (profileBlock) profileBlock.classList.remove('hidden');
-                  } catch (e) {}
-                }
-              });
-            } catch (e) {
-              overlay.style.transition = `opacity ${fadeIn}s ease`;
-              overlay.style.opacity = '1';
-              try {
-                    document.body.classList.add('home-theme');
-                if (hackerOverlay) hackerOverlay.classList.add('hidden');
-                if (snowOverlay) snowOverlay.classList.add('hidden');
-                if (resultsButtonContainer) resultsButtonContainer.classList.add('hidden');
-                if (skillsBlock) skillsBlock.classList.add('hidden');
-                if (resultsHint) resultsHint.classList.add('hidden');
-                if (profileBlock) profileBlock.classList.remove('hidden');
-              } catch (e) {}
-            }
-          }
-        } catch (e) { if (overlay) { overlay.style.transition = 'opacity 0.6s ease'; overlay.style.opacity = '1'; } }
-
-        // preload rapunzel
-        let pre = document.createElement('video');
-        pre.src = 'assets/rapunzel.mp4';
-        pre.preload = 'auto';
-        pre.playsInline = true;
-        let ready = false;
-        const t = setTimeout(() => { if (!ready) ready = false; }, 3000);
-        try {
-          await new Promise((resolve) => {
-            const onCan = () => { ready = true; pre.removeEventListener('canplay', onCan); resolve(true); };
-            pre.addEventListener('canplay', onCan);
-            pre.load();
-            setTimeout(() => resolve(false), 2500);
-          });
-        } catch (e) {}
-
-        // if preloaded, try to capture first frame as poster to avoid black frames
-        try {
-          if (pre && ready && pre.videoWidth && pre.videoHeight) {
-            try {
-              const c = document.createElement('canvas');
-              c.width = pre.videoWidth;
-              c.height = pre.videoHeight;
-              const ctx = c.getContext('2d');
-              ctx.drawImage(pre, 0, 0, c.width, c.height);
-              const data = c.toDataURL('image/jpeg', 0.8);
-              try { backgroundVideo.setAttribute('poster', data); } catch (e) {}
-            } catch (e) { console.warn('[RAPUNZEL] poster capture failed', e); }
-          }
-        } catch (e) {}
-
-        console.log('[RAPUNZEL] preload ready=', ready);
-
-                    // keep aura
-                    if (florContainer) { florContainer.classList.add('force-sparkles'); console.log('[RAPUNZEL] aura applied'); }
-        try { backgroundVideo.loop = false; console.log('[RAPUNZEL] background.loop set false'); } catch (e) {}
-        // suspend auto-resume behaviour while we switch to Rapunzel
-        try { if (backgroundVideo && backgroundVideo.dataset) backgroundVideo.dataset.suspendAutoResume = '1'; } catch (e) {}
-        // also set global suspend flag to stop other auto-resume hooks
-        try { window.__suspendBgAutoResume = true; } catch (e) {}
-        try { window.__suppressLowering = true; } catch (e) {}
-        // temporarily disable loop-after-lobby lowering logic
-        try { window.__countLoopsAfterLobby = false; } catch (e) {}
-        try { window.__didLowerAfterFirstBgLoop = true; } catch (e) {}
-        // pause/mute other audio sources (background-music)
-        try {
-          const bgMusicEl = document.getElementById('background-music');
-          if (bgMusicEl) {
-            try { bgMusicEl.pause(); } catch (e) {}
-            try { bgMusicEl.muted = true; } catch (e) {}
-            if (!bgMusicEl.dataset.origVolume) bgMusicEl.dataset.origVolume = String(bgMusicEl.volume || 0.5);
-          }
-        } catch (e) {}
-        // Force Rapunzel as the main background (replace #background) to avoid overlay issues
-        try {
-          const nextSrc = pre && ready ? pre.src : 'assets/rapunzel.mp4';
-          const fadeIn = 1.0;
-          const fadeOut = 0.58;
-                        console.log('[RAPUNZEL] bg-cycle button disabled');
-          bgTransitionLock = true;
-
-          console.log('[RAPUNZEL] starting transition to rapunzel, nextSrc=', nextSrc);
-
-          // Step 1: Fade overlay to black (background -> negro)
-          try {
-            overlay.style.display = 'block';
-            overlay.style.opacity = '0';
-            overlay.style.zIndex = '2';
-            overlay.style.pointerEvents = 'none';
-            
-            // Fade overlay to black
-            setTimeout(() => {
-              overlay.style.transition = `opacity ${fadeIn}s ease`;
-              overlay.style.opacity = '1';
-            }, 50);
-          } catch (e) {}
-
-          // Step 2: After overlay is black, change video and fade out overlay (negro -> rapunzel.mp4)
-          setTimeout(() => {
-            try {
-              document.body.classList.add('home-theme');
-              const hackerOverlayEl = document.getElementById('hacker-overlay');
-              const snowOverlayEl = document.getElementById('snow-overlay');
-              const resultsBtnCont = document.getElementById('results-button-container');
-              const skillsBlockEl = document.getElementById('skills-block');
-              const resultsHintEl = document.getElementById('results-hint');
-              const profileBlockEl = document.getElementById('profile-block');
-              if (hackerOverlayEl) hackerOverlayEl.classList.add('hidden');
-              if (snowOverlayEl) snowOverlayEl.classList.add('hidden');
-              if (resultsBtnCont) resultsBtnCont.classList.add('hidden');
-              if (skillsBlockEl) skillsBlockEl.classList.add('hidden');
-              if (resultsHintEl) resultsHintEl.classList.add('hidden');
-              if (profileBlockEl) profileBlockEl.classList.remove('hidden');
-
-              // Make background visible before changing to rapunzel
-              backgroundVideo.style.visibility = 'visible';
-              backgroundVideo.style.display = 'block';
-              backgroundVideo.style.zIndex = '1';
-              
-              // Change video to rapunzel (but don't play yet)
-              backgroundVideo.src = nextSrc;
-              backgroundVideo.loop = false;
-              backgroundVideo.muted = false;
-              backgroundVideo.volume = 1.0;
-              backgroundVideo.removeAttribute('muted');
-              backgroundVideo.load();
-              try { backgroundVideo.currentTime = 0; } catch (e) {}
-              
-              // Ensure user interaction for audio
-              hasUserInteracted = true;
-              
-              // Wait for video to be ready, then wait 1 more second before playing and fading
-              let videoReady = false;
-              const onVideoReady = () => {
-                if (videoReady) return;
-                videoReady = true;
-                backgroundVideo.removeEventListener('loadeddata', onVideoReady);
-                backgroundVideo.removeEventListener('canplay', onVideoReady);
-                
-                console.log('[RAPUNZEL] video ready, waiting 1 second before play and fade');
-                
-                // Apply 60% transparency to menu
-                try {
-                  const profileBlock = document.getElementById('profile-block');
-                  if (profileBlock) {
-                    profileBlock.style.transition = 'opacity 0.5s ease';
-                    profileBlock.style.opacity = '0.4';
-                    console.log('[RAPUNZEL] menu opacity set to 0.4');
-                  }
-                } catch (e) {}
-                
-                // Wait 1 second before starting play and fade
-                setTimeout(() => {
-                  console.log('[RAPUNZEL] starting play and fade simultaneously');
-                  
-                  // Start playing video
-                  backgroundVideo.play().then(() => {
-                    console.log('[RAPUNZEL] rapunzel video playing with audio');
-                    backgroundVideo.muted = false;
-                    backgroundVideo.volume = 1.0;
-                    refreshNameColorForCurrentBackground('#00CED1');
-                  }).catch(err => { 
-                    console.warn('[RAPUNZEL] background rapunzel play rejected', err); 
-                    refreshNameColorForCurrentBackground('#00CED1');
-                    try { 
-                      backgroundVideo.muted = true; 
-                      backgroundVideo.volume = 1.0; 
-                      backgroundVideo.play().catch(()=>{}); 
-                    } catch(e){} 
-                  });
-                  
-                  // Fade out overlay simultaneously
-                  overlay.style.transition = 'opacity 0.58s ease';
-                  overlay.style.opacity = '0';
-                  console.log('[RAPUNZEL] overlay fading out');
-                  
-                  bgTransitionLock = false;
-                  console.log('[RAPUNZEL] transition complete');
-                }, 1000); // Wait 1 second in black
-              };
-              
-              backgroundVideo.addEventListener('loadeddata', onVideoReady, { once: true });
-              backgroundVideo.addEventListener('canplay', onVideoReady, { once: true });
-              
-              // Fallback: if video doesn't load in 2 seconds, proceed anyway
-              setTimeout(onVideoReady, 2000);
-            } catch (e) { console.warn('[RAPUNZEL] transition error', e); }
-          }, fadeIn * 1000 + 100); // Wait for overlay to fade to black
-        } catch (e) { console.warn('[RAPUNZEL] forced background swap failed', e); }
-
-        // on end: remove aura and advance
-        const onEnd = (ev) => {
-          try {
-              // Only handle ended events triggered by the overlayVideo ending.
-              try {
-                if (ev && ev.target && overlayVideo && ev.target !== overlayVideo) {
-                  console.log('[RAPUNZEL] onEnd ignored; not overlay');
-                  return;
-                }
-              } catch (e) {}
-
-              // remove any overlay video (not used in this swap mode)
-              try {
-                if (overlayVideo && overlayVideo.parentNode) {
-                  try { overlayVideo.pause(); } catch (e) {}
-                  try { overlayVideo.parentNode.removeChild(overlayVideo); } catch (e) {}
-                  overlayVideo = null;
-                }
-              } catch (e) {}
-
-              if (florContainer) florContainer.classList.remove('force-sparkles');
-              isRapunzelActive = false;
-              window.__rapunzelActive = false;
-              bgTransitionLock = false;
-
-              try { if (backgroundVideo && backgroundVideo.dataset) delete backgroundVideo.dataset.suspendAutoResume; } catch (e) {}
-
-              // restore global suspend flag and keep normal background video audio
-              try { window.__suspendBgAutoResume = false; } catch (e) {}
-              try { window.__suppressLowering = false; } catch (e) {}
-              try { window.__countLoopsAfterLobby = true; } catch(e) {}
-              try { window.__bgSequenceManaged = true; } catch (e) {}
-              try { window.__didLowerAfterFirstBgLoop = false; } catch(e) {}
-              try {
-                const bgMusicEl = document.getElementById('background-music');
-                if (bgMusicEl) {
-                  try { bgMusicEl.pause(); } catch (e) {}
-                  try { bgMusicEl.muted = true; } catch (e) {}
-                }
-              } catch (e) {}
-
-              // restore the previous background that was playing before Rapunzel with black transition
-              try {
-                console.log('[RAPUNZEL] starting transition back to background');
-                
-                // Restore menu opacity to normal
-                try {
-                  const profileBlock = document.getElementById('profile-block');
-                  if (profileBlock) {
-                    profileBlock.style.transition = 'opacity 0.5s ease';
-                    profileBlock.style.opacity = '1';
-                    console.log('[RAPUNZEL] menu opacity restored to 1');
-                  }
-                } catch (e) {}
-                
-                // Step 1: Fade overlay to black (rapunzel ends in black screen)
-                try {
-                  overlay.style.display = 'block';
-                  overlay.style.opacity = '0';
-                  overlay.style.zIndex = '2';
-                  overlay.style.transition = 'opacity 0.5s ease';
-                  setTimeout(() => {
-                    overlay.style.opacity = '1';
-                    console.log('[RAPUNZEL] overlay faded to black');
-                  }, 50);
-                } catch (e) {}
-                
-                // Step 2: After overlay is black, change to background and fade out overlay
-                setTimeout(() => {
-                  console.log('[RAPUNZEL] changing to background video');
-                  try { backgroundVideo.style.display = 'block'; } catch(e) {}
-                  try { backgroundVideo.style.visibility = 'visible'; } catch(e) {}
-                  try { backgroundVideo.style.zIndex = '1'; } catch(e) {} // Restore z-index
-                  try { backgroundVideo.pause(); } catch(e) {}
-                  try { backgroundVideo.removeAttribute('poster'); } catch(e) {}
-                  
-                  // Use the previous background source if available, otherwise pick next
-                  let restoreSrc = prevBg && prevBg.src ? prevBg.src : null;
-                  if (!restoreSrc) {
-                    restoreSrc = pickNextBackgroundSrc();
-                  }
-                  console.log('[RAPUNZEL] restoring background:', restoreSrc);
-                  
-                  backgroundVideo.src = restoreSrc;
-                  backgroundVideo.loop = true;
-                  backgroundVideo.muted = false;
-                  backgroundVideo.volume = 0.08;
-                  
-                  // Restore bgIndex from prevBg if available
-                  if (prevBg && typeof prevBg.bgIndex !== 'undefined') {
-                    backgroundVideo.dataset.bgIndex = String(prevBg.bgIndex);
-                    setLastBackgroundIndex(prevBg.bgIndex);
-                  } else {
-                    const match = restoreSrc.match(/background(\d+)/);
-                    if (match) {
-                      backgroundVideo.dataset.bgIndex = match[1];
-                    } else {
-                      try { delete backgroundVideo.dataset.bgIndex; } catch (e) {}
-                    }
-                  }
-                  
-                  backgroundVideo.load();
-                  backgroundVideo.play().then(() => {
-                    console.log('[RAPUNZEL] background video playing');
-                  }).catch(err => { console.warn('[RAPUNZEL] background restore play rejected', err); try { backgroundVideo.muted = true; backgroundVideo.play().catch(()=>{}); } catch(e){} });
-                  
-                  // Fade out overlay to reveal background
-                  setTimeout(() => {
-                    console.log('[RAPUNZEL] fading out overlay to reveal background');
-                    overlay.style.transition = 'opacity 0.58s ease';
-                    overlay.style.opacity = '0';
-                  }, 200);
-                }, 600); // Wait for overlay to fade to black
-                
-                // Fallback: ensure overlay fades out after 2 seconds
-                setTimeout(() => {
-                  console.log('[RAPUNZEL] fallback: forcing overlay to fade out');
-                  overlay.style.transition = 'opacity 0.58s ease';
-                  overlay.style.opacity = '0';
-                }, 2000);
-              } catch (e) { console.warn('[RAPUNZEL] background restore failed', e); }
-
-              try { if (typeof updateBgIndexDisplay === 'function') updateBgIndexDisplay(); } catch (e) {}
-              // restore numeric display as a fallback for this scope
-              try {
-                const display = document.getElementById('bg-index-display');
-                const bgIndex = (backgroundVideo && backgroundVideo.dataset && backgroundVideo.dataset.bgIndex) ? backgroundVideo.dataset.bgIndex : (sessionStorage.getItem('__bgVideoLastIndex') || '1');
-                if (display) display.textContent = String(bgIndex);
-              } catch (e) {}
-              // re-enable background-cycle button
-              try {
-                const bgCycleBtn = document.getElementById('bg-cycle-button');
-                if (bgCycleBtn) {
-                  bgCycleBtn.disabled = false;
-                  bgCycleBtn.classList.remove('disabled-during-rapunzel');
-                }
-              } catch (e) {}
-              // ensure overlay hidden and reset for future use
-              try { 
-                if (overlay) {
-                  overlay.style.display = 'block';
-                  overlay.style.zIndex = '2';
-                  overlay.style.transition = 'none';
-                  overlay.style.opacity = '0';
-                  // Force a reflow to ensure the opacity change takes effect
-                  void overlay.offsetWidth;
-                }
-              } catch (e) { 
-                if (overlay) { 
-                  overlay.style.display = 'block';
-                  overlay.style.zIndex = '2';
-                  overlay.style.transition = 'none';
-                  overlay.style.opacity = '0'; 
-                } 
-              }
-
-          } catch (e) {}
-        };
-
-        try {
-          if (overlayVideo) overlayVideo.addEventListener('ended', onEnd, { once: true });
-          else backgroundVideo.addEventListener('ended', onEnd, { once: true });
-        } catch (e) {}
-      } catch (e) {}
-    });
-  } catch (e) {}
-});
 
 
 function escapeHtml(str) {
@@ -1267,8 +784,6 @@ function ensureBackgroundVideoUnpausable(videoEl) {
         // if page hidden, or caller requested suspension, don't auto-resume
         try {
           if (document.hidden) return;
-          // do not resume if Rapunzel is active
-          if (typeof window !== 'undefined' && (window.__rapunzelActive === true || (typeof isRapunzelActive !== 'undefined' && isRapunzelActive))) return;
           if (videoEl.dataset && videoEl.dataset.suspendAutoResume === '1') return;
           if (typeof window !== 'undefined' && window.__suspendBgAutoResume === true) return;
         } catch (e) {}
@@ -1407,17 +922,10 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const display = document.getElementById('bg-index-display');
       if (!display || !backgroundVideo) return;
-      const rapunzelActive = (typeof window !== 'undefined' && window.__rapunzelActive === true) || (typeof isRapunzelActive !== 'undefined' && isRapunzelActive);
-      if (rapunzelActive) {
-        display.innerHTML = '<img src="assets/sticker.gif" alt="sticker" style="width:20px;height:20px;display:block">';
-        return;
-      }
       const bgIndex = backgroundVideo.dataset.bgIndex || getLastBackgroundIndex();
       if (bgIndex) display.textContent = String(bgIndex);
     } catch (e) {}
   }
-
-  // activateRapunzel() was replaced by a more robust handler added at the end
 
   function refillBackgroundBagAvoidingRepeat(lastIndex) {
     const bag = shuffleBackgroundBag(buildAllBackgroundIndices());
@@ -2484,8 +1992,8 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const tryPlayOnGesture = () => {
           try {
-            // if Rapunzel is active or suspension is set, don't resume the background
-            try { if (window.__suspendBgAutoResume === true || (typeof isRapunzelActive !== 'undefined' && isRapunzelActive)) return; } catch (e) {}
+            // if suspension is explicitly requested, don't resume the background
+            try { if (window.__suspendBgAutoResume === true) return; } catch (e) {}
             const bg = document.getElementById('background');
             if (!bg || bg.tagName !== 'VIDEO') return;
             const isIOS = /iP(ad|hone|od)/.test(navigator.userAgent) ||
@@ -2594,8 +2102,6 @@ if (window.__bgSequenceManaged && !isIOS && bg.muted) {
 
 
   let bgTransitionLock = false;
-  let isRapunzelActive = false;
-
   function getCurrentBackgroundSrc() {
     try {
       const src = backgroundVideo.currentSrc || backgroundVideo.src || backgroundVideo.getAttribute('src');
@@ -2606,7 +2112,6 @@ if (window.__bgSequenceManaged && !isIOS && bg.muted) {
 
   function cycleBackgroundVideo() {
     if (bgTransitionLock || !backgroundVideo) return;
-    if (isRapunzelActive) return; // don't cycle while Rapunzel is playing
 
     const overlay = document.getElementById('bg-transition-overlay');
     if (!overlay) return;
@@ -2742,14 +2247,6 @@ if (window.__bgSequenceManaged && !isIOS && bg.muted) {
     });
   }
 
-  // Flor badge - play Rapunzel background and keep aura while it plays
-  try {
-    // Legacy wrapper removed: the robust Rapunzel handler attaches earlier.
-    const florBadge = document.getElementById('flor-badge');
-    if (florBadge) {
-      // no-op: click handled by main Rapunzel logic
-    }
-  } catch (e) {}
 
  
   function handleTilt(e, element) {

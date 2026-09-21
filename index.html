@@ -481,19 +481,6 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
         }
 
-        /* Visual for disabled state while Rapunzel plays */
-        .bg-cycle-btn.disabled-during-rapunzel,
-        .bg-cycle-btn.disabled-during-rapunzel:hover,
-        .bg-cycle-btn.disabled-during-rapunzel:focus {
-            opacity: 0.35 !important;
-            pointer-events: none;
-            transform: none !important;
-            cursor: not-allowed;
-            color: rgba(255,255,255,0.35) !important;
-            border-color: rgba(255,255,255,0.06) !important;
-            box-shadow: none !important;
-        }
-
         .theme-button {
             width: 30px;
             height: 30px;
@@ -1162,50 +1149,6 @@
 
         .badge:hover {
             filter: brightness(1.3) drop-shadow(0 0 10px rgba(255, 255, 0, 0.8));
-        }
-
-        .sparkles {
-            position: absolute;
-            width: 28px;
-            height: 28px;
-            opacity: 0;
-            pointer-events: none;
-            animation: none;
-            display: block;
-            mix-blend-mode: screen;
-        }
-
-        .badge-container.upcoming.force-sparkles .sparkles {
-            opacity: 1 !important;
-            transform: translateY(0);
-            animation: sparkles-loop 1.2s ease-in-out infinite;
-        }
-
-        /* Persistent yellow aura for force-sparkles (fallback when sparkles video is unavailable) */
-        .badge-container.upcoming.force-sparkles .badge {
-            filter: brightness(1.3) drop-shadow(0 0 14px rgba(255,215,0,0.95));
-            /* do not change transform/scale here to avoid visual jump on click */
-        }
-
-        @keyframes sparkles-loop {
-            0% { opacity: 1; transform: translateY(0); }
-            50% { opacity: 0.6; transform: translateY(-6px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .badge-container.upcoming:hover .sparkles {
-            animation: sparkles-up 0.8s ease-out forwards;
-        }
-
-        @keyframes sparkles-up {
-            0% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-40px);
-            }
         }
 
         img[src="assets/owner.png"]:hover {
@@ -3403,9 +3346,6 @@
 
                 const lowerOnce = () => {
                     try {
-                        // skip lowering during Rapunzel or when explicitly suppressed
-                        try { if (typeof isRapunzelActive !== 'undefined' && isRapunzelActive) return; } catch(e) {}
-                        try { if (typeof window !== 'undefined' && window.__rapunzelActive === true) return; } catch(e) {}
                         try { if (typeof window !== 'undefined' && window.__suppressLowering === true) return; } catch(e) {}
                         if (!window.__countLoopsAfterLobby) return;
                         if (window.__didLowerAfterFirstBgLoop) return;
@@ -3523,9 +3463,6 @@
                                             if (prev > ct + 0.2 && (prev/dur) > 0.8) {
                                                 bg.__loopCount = (bg.__loopCount || 0) + 1;
                                                 try {
-                                                    // avoid lowering while Rapunzel is active
-                                                    try { if (typeof isRapunzelActive !== 'undefined' && isRapunzelActive) return; } catch(e) {}
-                                                    try { if (typeof window !== 'undefined' && window.__rapunzelActive === true) return; } catch(e) {}
                                                     try { if (typeof window !== 'undefined' && window.__suppressLowering === true) return; } catch(e) {}
                                                     if (window.__countLoopsAfterLobby && !window.__didLowerAfterFirstBgLoop && bg.__loopCount >= 1) {
                                                         window.__didLowerAfterFirstBgLoop = true;
@@ -3846,9 +3783,6 @@
                                             <div class="badge-box">
                                                 <div class="badge-box-inner">
                                                     <div class="badge-group">
-                                                        <div id="flor-badge-container" class="badge-container upcoming">
-                                                            <img id="flor-badge" src="assets/flor.png" alt="flor" class="badge">
-                                                        </div>
                                                         <div class="badge-container">
                                                             <a href="https://instagram.com/guillevgo" target="_blank" rel="noopener noreferrer">
                                                                 <img src="assets/boy.png" alt="boy" class="badge">
@@ -4579,7 +4513,6 @@
             obs.observe(document.body, { childList: true, subtree: true, attributes: true });
         })();
     </script>
-
 
 
 
